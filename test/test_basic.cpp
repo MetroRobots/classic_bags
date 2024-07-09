@@ -59,9 +59,9 @@ public:
     bag_path_ = temporary_dir_path_ / ::testing::UnitTest::GetInstance()->current_test_info()->name();
   }
 
-  void WriteSimpleBag()
+  void WriteSimpleBag(const std::string& storage_id = "sqlite3")
   {
-    classic_bags::Bag out_bag(std::string(bag_path_), classic_bags::Write);
+    classic_bags::Bag out_bag(std::string(bag_path_), classic_bags::Write, storage_id);
     std_msgs::msg::String s;
     s.data = "muppets";
     std_msgs::msg::Int32 i;
@@ -71,39 +71,49 @@ public:
     out_bag.close();
   }
 
+  void CheckSimpleBag(const std::string& storage_id = "sqlite3")
+  {
+    classic_bags::Bag bag = classic_bags::Bag(std::string(bag_path_), classic_bags::Read, storage_id);
+    ASSERT_TRUE(bag.hasNext());
+    auto msg0 = bag.readNext();
+    ASSERT_TRUE(bag.hasNext());
+    auto msg1 = bag.readNext();
+    ASSERT_FALSE(bag.hasNext());
+
+    EXPECT_EQ(msg0->getTopic(), "/chatter");
+    EXPECT_EQ(msg1->getTopic(), "/numbers");
+
+    std_msgs::msg::String::SharedPtr s = msg0->instantiate<std_msgs::msg::String>();
+    std_msgs::msg::Int32::SharedPtr i = msg1->instantiate<std_msgs::msg::Int32>();
+
+    ASSERT_TRUE(s != nullptr);
+    ASSERT_TRUE(i != nullptr);
+
+    EXPECT_EQ(s->data, "muppets");
+    EXPECT_EQ(i->data, 42);
+
+    s = msg1->instantiate<std_msgs::msg::String>();
+    i = msg0->instantiate<std_msgs::msg::Int32>();
+
+    ASSERT_TRUE(s == nullptr);
+    // TODO: We are able to cast the string as an int for unknown reasons
+    // ASSERT_TRUE(i != nullptr);
+  }
+
   std::filesystem::path temporary_dir_path_;
   std::filesystem::path bag_path_;
 };
 
-TEST_F(BagTest, test_value_equality)
+TEST_F(BagTest, test_default)
 {
   WriteSimpleBag();
+  CheckSimpleBag();
+}
 
-  classic_bags::Bag bag = classic_bags::Bag(std::string(bag_path_));
-  ASSERT_TRUE(bag.hasNext());
-  auto msg0 = bag.readNext();
-  ASSERT_TRUE(bag.hasNext());
-  auto msg1 = bag.readNext();
-  ASSERT_FALSE(bag.hasNext());
-
-  EXPECT_EQ(msg0->getTopic(), "/chatter");
-  EXPECT_EQ(msg1->getTopic(), "/numbers");
-
-  std_msgs::msg::String::SharedPtr s = msg0->instantiate<std_msgs::msg::String>();
-  std_msgs::msg::Int32::SharedPtr i = msg1->instantiate<std_msgs::msg::Int32>();
-
-  ASSERT_TRUE(s != nullptr);
-  ASSERT_TRUE(i != nullptr);
-
-  EXPECT_EQ(s->data, "muppets");
-  EXPECT_EQ(i->data, 42);
-
-  s = msg1->instantiate<std_msgs::msg::String>();
-  i = msg0->instantiate<std_msgs::msg::Int32>();
-
-  ASSERT_TRUE(s == nullptr);
-  // TODO: We are able to cast the string as an int for unknown reasons
-  // ASSERT_TRUE(i != nullptr);
+TEST_F(BagTest, test_mcap)
+{
+  WriteSimpleBag("mcap");
+  CheckSimpleBag("mcap");
 }
 
 int main(int argc, char** argv)

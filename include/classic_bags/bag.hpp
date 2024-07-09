@@ -115,23 +115,23 @@ public:
   {
   }
 
-  explicit Bag(std::string const& filename, uint32_t mode = Read)
+  explicit Bag(std::string const& filename, uint32_t mode = Read, const std::string& storage_id = "sqlite3")
   {
-    open(filename, mode);
+    open(filename, mode, storage_id);
   }
 
-  void open(std::string const& filename, uint32_t mode = Read)
+  void open(std::string const& filename, uint32_t mode = Read, const std::string& storage_id = "sqlite3")
   {
+    rosbag2_storage::StorageOptions storage_options{};
+    storage_options.uri = filename;
+    storage_options.storage_id = storage_id;
+
+    rosbag2_cpp::ConverterOptions converter_options{};
+    converter_options.input_serialization_format = "cdr";
+    converter_options.output_serialization_format = "cdr";
+
     if (mode == Read)
     {
-      rosbag2_storage::StorageOptions storage_options{};
-      storage_options.uri = filename;
-      storage_options.storage_id = "sqlite3";
-
-      rosbag2_cpp::ConverterOptions converter_options{};
-      converter_options.input_serialization_format = "cdr";
-      converter_options.output_serialization_format = "cdr";
-
       reader_ = std::make_unique<rosbag2_cpp::readers::SequentialReader>();
       reader_->open(storage_options, converter_options);
 
@@ -144,7 +144,7 @@ public:
     else if (mode == Write)
     {
       writer_ = std::make_unique<rosbag2_cpp::Writer>();
-      writer_->open(filename);
+      writer_->open(storage_options, converter_options);
     }
   }
 

@@ -45,7 +45,7 @@ class GenericTimestamp:
 
 
 class Bag:
-    def __init__(self, path, mode='r', serialization_format='cdr', format='sqlite3'):
+    def __init__(self, path, mode='r', serialization_format='cdr', format=''):
         self.storage_options = StorageOptions(str(path), format)
         self.converter_options = ConverterOptions(serialization_format, serialization_format)
         self.mode = mode

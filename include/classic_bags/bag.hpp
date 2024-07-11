@@ -115,12 +115,12 @@ public:
   {
   }
 
-  explicit Bag(std::string const& filename, uint32_t mode = Read, const std::string& storage_id = "sqlite3")
+  explicit Bag(std::string const& filename, uint32_t mode = Read, const std::string& storage_id = "")
   {
     open(filename, mode, storage_id);
   }
 
-  void open(std::string const& filename, uint32_t mode = Read, const std::string& storage_id = "sqlite3")
+  void open(std::string const& filename, uint32_t mode = Read, const std::string& storage_id = "")
   {
     rosbag2_storage::StorageOptions storage_options{};
     storage_options.uri = filename;

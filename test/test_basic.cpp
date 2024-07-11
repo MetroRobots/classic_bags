@@ -45,7 +45,7 @@ class BagTest : public ::testing::Test
 public:
   BagTest()
   {
-    temporary_dir_path_ = std::filesystem::temp_directory_path() / "tmp_test_dir_";
+    temporary_dir_path_ = std::filesystem::temp_directory_path() / "cpp_tmp_test_dir_";
     std::filesystem::create_directory(temporary_dir_path_);
   }
 
@@ -59,7 +59,7 @@ public:
     bag_path_ = temporary_dir_path_ / ::testing::UnitTest::GetInstance()->current_test_info()->name();
   }
 
-  void WriteSimpleBag(const std::string& storage_id = "sqlite3")
+  void WriteSimpleBag(const std::string& storage_id = "")
   {
     classic_bags::Bag out_bag(std::string(bag_path_), classic_bags::Write, storage_id);
     std_msgs::msg::String s;
@@ -71,7 +71,7 @@ public:
     out_bag.close();
   }
 
-  void CheckSimpleBag(const std::string& storage_id = "sqlite3")
+  void CheckSimpleBag(const std::string& storage_id = "")
   {
     classic_bags::Bag bag = classic_bags::Bag(std::string(bag_path_), classic_bags::Read, storage_id);
     ASSERT_TRUE(bag.hasNext());
@@ -97,7 +97,7 @@ public:
 
     ASSERT_TRUE(s == nullptr);
     // TODO: We are able to cast the string as an int for unknown reasons
-    // ASSERT_TRUE(i != nullptr);
+    // ASSERT_TRUE(i == nullptr);
   }
 
   std::filesystem::path temporary_dir_path_;
@@ -114,6 +114,36 @@ TEST_F(BagTest, test_mcap)
 {
   WriteSimpleBag("mcap");
   CheckSimpleBag("mcap");
+}
+
+TEST_F(BagTest, test_sqlite3)
+{
+  WriteSimpleBag("sqlite3");
+  CheckSimpleBag("sqlite3");
+}
+
+TEST_F(BagTest, test_mcap_default)
+{
+  WriteSimpleBag("mcap");
+  CheckSimpleBag();
+}
+
+TEST_F(BagTest, test_sqlite_default)
+{
+  WriteSimpleBag("sqlite3");
+  CheckSimpleBag();
+}
+
+TEST_F(BagTest, test_sqlite_mcap)
+{
+  WriteSimpleBag("sqlite3");
+  EXPECT_ANY_THROW(CheckSimpleBag("mcap"));
+}
+
+TEST_F(BagTest, test_mcap_sqlite3)
+{
+  WriteSimpleBag("mcap");
+  EXPECT_ANY_THROW(CheckSimpleBag("sqlite3"));
 }
 
 int main(int argc, char** argv)

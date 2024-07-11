@@ -61,7 +61,7 @@ class MessageInstance
 public:
   MessageInstance(const rosbag2_storage::SerializedBagMessage& serialized, const std::string& datatype)
   {
-    time_ = rclcpp::Time(serialized.time_stamp);
+    time_ = rclcpp::Time(serialized.recv_timestamp);
     topic_ = serialized.topic_name;
     datatype_ = datatype;
     data_ = serialized.serialized_data;

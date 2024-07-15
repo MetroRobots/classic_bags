@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>classic_bags</name>
-  <version>0.3.0</version>
+  <version>0.4.0</version>
   <description>A ROS 2 interface in the style of ROS 1 for reading and writing bag files</description>
   <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>
   <license>BSD 3-clause</license>

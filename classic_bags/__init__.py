@@ -90,7 +90,8 @@ class Bag:
 
         if topic not in self.topic_metadata:
             msgtype = get_message_name(msg)
-            self.topic_metadata[topic] = TopicMetadata(name=topic, type=msgtype,
+            topic_id = len(self.topic_metadata)
+            self.topic_metadata[topic] = TopicMetadata(id=topic_id, name=topic, type=msgtype,
                                                        serialization_format=self.serialization_format)
             self.writer.create_topic(self.topic_metadata[topic])
 

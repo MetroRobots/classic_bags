@@ -8,7 +8,7 @@ setup(
     description='A ROS 2 interface in the style of ROS 1 for reading and writing bag files',
     license='BSD 3-clause',
     maintainer='David V. Lu!!',
-    maintainer_email='davidvlu@gmail.com',
+    maintainer_email='david@metrorobots.com',
     packages=[package_name],
     data_files=[
         ('share/ament_index/resource_index/packages', ['resource/' + package_name]),

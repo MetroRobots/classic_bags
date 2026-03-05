@@ -20,10 +20,10 @@ if(BUILD_TESTING)
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
   )
-  ament_target_dependencies(${PROJECT_NAME}_basic_test
-    rosbag2_cpp
-    rosbag2_storage
-    std_msgs
+  target_link_libraries(${PROJECT_NAME}_basic_test
+    ${std_msgs_TARGETS}
+    rosbag2_cpp::rosbag2_cpp
+    rosbag2_storage::rosbag2_storage
   )
 
   find_package(ament_cmake_pytest REQUIRED)
